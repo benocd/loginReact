@@ -42,7 +42,25 @@ function login(username, password) {
               "user",
               JSON.stringify(responseInfo.data.sub)
             );
-            return responseInfo;
+            return responseInfo.data.sub;
+          })
+          .then(function(identityId) {
+            return axios
+              .get(
+                "https://companyindustries.azurewebsites.net/api/Employees/ByIdentityId?identityId=" +
+                  identityId,
+                { headers: { Authorization: AuthStr } }
+              )
+              .then(function(responseInfo) {
+                sessionStorage.setItem(
+                  "employee",
+                  JSON.stringify(responseInfo.data)
+                );
+                return {
+                  ...responseInfo.data,
+                  IdentityId: identityId
+                };
+              });
           });
       }
     })
@@ -54,6 +72,7 @@ function login(username, password) {
 function logout() {
   // remove user from local storage to log user out
   sessionStorage.removeItem("user");
+  sessionStorage.removeItem("token");
 }
 
 function getAll() {

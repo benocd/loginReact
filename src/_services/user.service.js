@@ -26,12 +26,13 @@ function login(username, password) {
       "https://identityindustries.azurewebsites.net/Connect/Token",
       formData
     )
+
     .then(function(response) {
       console.log(response.data);
       if (response.data) {
         const AuthStr = "Bearer ".concat(response.data.access_token);
         sessionStorage.setItem("token", JSON.stringify(response.data));
-        axios
+        return axios
           .get(
             "https://identityindustries.azurewebsites.net/Connect/UserInfo",
             { headers: { Authorization: AuthStr } }
@@ -41,14 +42,13 @@ function login(username, password) {
               "user",
               JSON.stringify(responseInfo.data.sub)
             );
+            return responseInfo;
           });
       }
     })
     .catch(function(error) {
       console.log(error);
     });
-
-  return user;
 }
 
 function logout() {
